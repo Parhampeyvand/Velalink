@@ -1,0 +1,13 @@
+{
+  "uplink_interface": "enp5s0",
+  "wifi_interface": "wlp0s20f3",
+  "ssid": "My-Hotspot",
+  "passphrase": "change-this-password",
+  "country": "IR",
+  "channel": 1,
+  "subnet": "10.42.0.0/24",
+  "vpn": {
+    "enabled": false,
+    "vless_uri": "vless://UUID@server.example:443?encryption=none&security=reality&type=tcp&pbk=PUBLIC_KEY&fp=chrome&sni=example.com&sid=SHORT_ID#My-VPN"
+  }
+}
