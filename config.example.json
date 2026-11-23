@@ -6,6 +6,7 @@
   "country": "IR",
   "channel": 1,
   "subnet": "10.42.0.0/24",
+  "prevent_sleep": true,
   "vpn": {
     "enabled": false,
     "vless_uri": "vless://UUID@server.example:443?encryption=none&security=reality&type=tcp&pbk=PUBLIC_KEY&fp=chrome&sni=example.com&sid=SHORT_ID#My-VPN"

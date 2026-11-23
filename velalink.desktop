@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=ولا لینک
+Comment=پنل فارسی هات‌اسپات و تونل VLESS
+Exec=python3 /home/parham/ollama/simple-hotspot/velalink_panel.py
+Terminal=false
+Categories=Network;Utility;

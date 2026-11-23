@@ -1,0 +1,13 @@
+[Unit]
+Description=VelaLink Wi-Fi hotspot and VLESS tunnel
+Wants=network-online.target
+After=network-online.target NetworkManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/python3 /home/parham/ollama/simple-hotspot/hotspot.py start --config /home/parham/ollama/simple-hotspot/config.json
+ExecStop=/usr/bin/python3 /home/parham/ollama/simple-hotspot/hotspot.py stop --config /home/parham/ollama/simple-hotspot/config.json
+
+[Install]
+WantedBy=multi-user.target

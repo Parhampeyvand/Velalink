@@ -1,0 +1,12 @@
+[Unit]
+Description=VelaLink local web panel
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/parham/ollama/simple-hotspot
+ExecStart=/usr/bin/python3 /home/parham/ollama/simple-hotspot/velalink_panel.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

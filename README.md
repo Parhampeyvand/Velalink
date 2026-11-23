@@ -49,6 +49,30 @@ hotspot; the host computer itself keeps using its normal connection.
 ignored by Git on purpose—never commit or share it. Use the included
 `config.example.json` as a safe public template.
 
+## Start automatically after boot
+
+Install the included systemd unit, then enable it once:
+
+```bash
+sudo install -m 644 velalink.service /etc/systemd/system/velalink.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now velalink.service
+```
+
+## Modern local control panel
+
+VelaLink also includes a modern, right-to-left Persian web panel. Install and
+start its local-only service, then open `http://127.0.0.1:8091` in a browser:
+
+```bash
+sudo install -m 644 velalink-panel.service /etc/systemd/system/velalink-panel.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now velalink-panel.service
+```
+
+The panel listens only on the local computer and provides start, stop, restart,
+status, and configuration controls.
+
 ---
 
 ## فارسی
@@ -97,3 +121,27 @@ sudo python3 hotspot.py stop --config config.json
 `config.json` ممکن است رمز Wi‑Fi و لینک خصوصی VLESS داشته باشد. این فایل عمداً
 در Git نادیده گرفته می‌شود؛ آن را منتشر نکن. برای انتشار عمومی از
 `config.example.json` استفاده کن.
+
+### اجرای خودکار پس از روشن‌شدن سیستم
+
+فایل `velalink.service` را نصب و سرویس را یک‌بار فعال کن:
+
+```bash
+sudo install -m 644 velalink.service /etc/systemd/system/velalink.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now velalink.service
+```
+
+### پنل کنترل مدرن و فارسی
+
+یک پنل وب فارسی، راست‌چین و مدرن نیز همراه پروژه هست. سرویس آن را فعال کن و
+سپس `http://127.0.0.1:8091` را در مرورگر باز کن:
+
+```bash
+sudo install -m 644 velalink-panel.service /etc/systemd/system/velalink-panel.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now velalink-panel.service
+```
+
+پنل فقط روی خود همان کامپیوتر باز می‌شود و کنترل روشن/خاموش، راه‌اندازی مجدد،
+وضعیت و تنظیمات را دارد.

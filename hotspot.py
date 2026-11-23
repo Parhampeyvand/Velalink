@@ -18,6 +18,7 @@ HOSTAPD = RUN / "hostapd.conf"
 DNSMASQ = RUN / "dnsmasq.conf"
 PID = RUN / "dnsmasq.pid"
 XRAY = RUN / "xray.json"
+INHIBIT = RUN / "sleep-inhibitor.pid"
 TPROXY_PORT = 12345
 MARK = "0x1"
 ROUTE_TABLE = "100"
@@ -60,12 +61,15 @@ def config(path: Path) -> dict:
     if vpn["enabled"] and not str(vpn.get("vless_uri", "")).startswith("vless://"):
         raise RuntimeError("برای VPN، لینک VLESS را در vpn.vless_uri وارد کنید.")
     cfg["vpn"] = vpn
+    cfg["prevent_sleep"] = bool(cfg.get("prevent_sleep", True))
     return cfg
 
 
 def preflight(cfg: dict) -> list[str]:
     errors: list[str] = []
     tools = ["ip", "iw", "nft", "hostapd", "dnsmasq"]
+    if cfg["prevent_sleep"]:
+        tools.append("systemd-inhibit")
     if cfg["vpn"]["enabled"] and not Path(XRAY_BIN).is_file():
         errors.append("ابزار لازم وجود ندارد: xray")
     for tool in tools:
@@ -169,13 +173,19 @@ def firewall(cfg: dict) -> None:
     subprocess.run(("nft", "-f", "-"), input=rules, text=True, check=True)
 
 
-def stop(cfg: dict, quiet: bool = False) -> None:
+def stop(cfg: dict, quiet: bool = False, restore_network: bool = True) -> None:
     root()
     if PID.exists():
         try:
             os.kill(int(PID.read_text().strip()), signal.SIGTERM)
         except (ValueError, ProcessLookupError):
             pass
+    if INHIBIT.exists():
+        try:
+            os.kill(int(INHIBIT.read_text().strip()), signal.SIGTERM)
+        except (ValueError, ProcessLookupError):
+            pass
+        INHIBIT.unlink(missing_ok=True)
     cmd("pkill", "-f", str(HOSTAPD), check=False)
     cmd("pkill", "-f", str(XRAY), check=False)
     cmd("nft", "delete", "table", "inet", "simple_hotspot", check=False, capture=True)
@@ -183,6 +193,8 @@ def stop(cfg: dict, quiet: bool = False) -> None:
     cmd("ip", "route", "flush", "table", ROUTE_TABLE, check=False, capture=True)
     cmd("ip", "addr", "flush", "dev", cfg["wifi_interface"], check=False)
     cmd("ip", "link", "set", cfg["wifi_interface"], "down", check=False)
+    if restore_network and shutil.which("nmcli"):
+        cmd("nmcli", "device", "set", cfg["wifi_interface"], "managed", "yes", check=False, capture=True)
     if not quiet:
         print("هات‌اسپات خاموش و قوانین اختصاصی پاک شد.")
 
@@ -192,7 +204,9 @@ def start(cfg: dict) -> None:
     errors = preflight(cfg)
     if errors:
         raise RuntimeError("\n".join(errors))
-    stop(cfg, quiet=True)
+    if shutil.which("nmcli"):
+        cmd("nmcli", "device", "set", cfg["wifi_interface"], "managed", "no", check=False, capture=True)
+    stop(cfg, quiet=True, restore_network=False)
     write_files(cfg)
     cmd("ip", "link", "set", cfg["wifi_interface"], "down")
     cmd("ip", "addr", "add", f"{cfg['gateway']}/{cfg['network'].prefixlen}", "dev", cfg["wifi_interface"])
@@ -207,6 +221,12 @@ def start(cfg: dict) -> None:
     firewall(cfg)
     cmd("hostapd", "-B", str(HOSTAPD))
     cmd("dnsmasq", "--conf-file=" + str(DNSMASQ))
+    if cfg["prevent_sleep"]:
+        inhibitor = subprocess.Popen(("systemd-inhibit", "--what=sleep", "--mode=block",
+                                      "--who=VelaLink", "--why=Hotspot is active", "sleep", "infinity"),
+                                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                     start_new_session=True)
+        INHIBIT.write_text(str(inhibitor.pid))
     print(f"روشن شد: {cfg['ssid']} ({cfg['gateway']})")
 
 
@@ -218,6 +238,9 @@ def status(cfg: dict) -> None:
     if cfg["vpn"]["enabled"]:
         xray = cmd("pgrep", "-af", str(XRAY), check=False, capture=True).returncode == 0
         print("VPN:", "فعال" if xray else "غیرفعال")
+    if cfg["prevent_sleep"]:
+        awake = INHIBIT.exists() and cmd("kill", "-0", INHIBIT.read_text().strip(), check=False).returncode == 0
+        print("جلوگیری از Sleep:", "فعال" if awake else "غیرفعال")
 
 
 def main() -> int:
