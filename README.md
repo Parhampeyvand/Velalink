@@ -7,6 +7,8 @@ It is built for a simple, useful separation: devices connected to the hotspot
 can use the normal Internet or an optional VLESS/Xray tunnel, while the host
 computer keeps its own Internet connection unchanged.
 
+**Website:** [parhampeyvand.ir/velalink.html](https://parhampeyvand.ir/velalink.html)
+
 > **Private by design:** your Wi-Fi password and VLESS link stay in a local
 > `config.json` file. That file is ignored by Git and must never be uploaded.
 
@@ -116,6 +118,8 @@ Choose and add a license before distributing production builds.
 اختیار دستگاه‌ها می‌گذارد. دستگاه‌های متصل می‌توانند اینترنت عادی داشته باشند
 یا در صورت فعال‌سازی، فقط ترافیک آن‌ها از تونل VLESS/Xray عبور کند؛ اینترنت خود
 کامپیوتر بدون تغییر باقی می‌ماند.
+
+**وب‌سایت:** [parhampeyvand.ir/velalink.html](https://parhampeyvand.ir/velalink.html)
 
 > **حریم خصوصی:** رمز Wi-Fi و لینک VLESS فقط در `config.json` محلی ذخیره
 > می‌شوند. این فایل در Git نادیده گرفته شده و نباید در گیت‌هاب قرار بگیرد.
