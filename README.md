@@ -98,6 +98,13 @@ starting a Windows hotspot and configuring Internet Connection Sharing.
 - Transparent VLESS routing is intentionally not included in the Windows
   preview yet, because it needs a network driver such as WinDivert or Wintun.
 
+## ESP32 Arduino edition
+
+The [`esp32`](esp32) folder contains an Arduino sketch for ESP32 development
+boards. It creates a lightweight Wi-Fi-to-Wi-Fi router using WPA2 and IPv4
+NAPT. It does not run VLESS/Xray; use the Linux edition for transparent VLESS
+routing.
+
 ## Security
 
 - Never commit `config.json`, your Wi-Fi password, or a VLESS URI.
@@ -182,6 +189,12 @@ sudo systemctl enable --now velalink.service velalink-panel.service
 - ماشین مجازی بدون USB Wi-Fi passthrough نمی‌تواند SSID پخش کند.
 - عبور شفاف VLESS در نسخهٔ پیش‌نمایش ویندوز عمداً فعال نیست؛ این قابلیت به
   درایوری مانند WinDivert یا Wintun نیاز دارد.
+
+## نسخهٔ Arduino برای ESP32
+
+پوشهٔ [`esp32`](esp32) یک Sketch آردوینو برای بردهای توسعهٔ ESP32 دارد. این
+نسخه یک روتر سبک Wi-Fi به Wi-Fi با WPA2 و IPv4 NAPT می‌سازد؛ Xray/VLESS را اجرا
+نمی‌کند و برای تونل شفاف باید از نسخهٔ لینوکسی استفاده شود.
 
 ## نکات امنیتی
 
